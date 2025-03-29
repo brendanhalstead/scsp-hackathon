@@ -264,7 +264,7 @@ async function factCheckClaims(claims) {
             'Authorization': `Bearer ${PERPLEXITY_API_KEY}`
           },
           body: JSON.stringify({
-            model: 'sonar-small-chat', // Using smaller model for faster response
+            model: 'sonar', // Using model that works in browser context
             messages: [
               {
                 role: 'system',

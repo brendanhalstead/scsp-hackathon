@@ -89,7 +89,7 @@ async function testConnections() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'sonar-small-chat',
+          model: 'sonar',
           messages: [
             { role: 'user', content: 'Hello, this is a test message. Please respond with "API connection successful".' }
           ],
