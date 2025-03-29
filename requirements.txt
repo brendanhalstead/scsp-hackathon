@@ -12,3 +12,4 @@ modal
 datasets
 Jinja2
 pydantic-yaml
+click

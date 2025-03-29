@@ -1,11 +1,11 @@
 import os
+import click
 import json
 import math
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 import logging
 from dotenv import load_dotenv
-from openai import OpenAI
 import openai
 import litellm
 from datetime import datetime
@@ -112,7 +112,15 @@ def load_prompt_template(
     return env.get_template(template_name)
 
 
-def main():
+@click.command()
+@click.option("--prompt_filename", "-p", type=str, help="The prompt to render")
+@click.option(
+    "--output_filename",
+    type=str,
+    help="The output file to save the results to",
+    default="entity_extraction_responses.json",
+)
+def main(prompt_filename: str, output_filename: str):
     """
     A demo application that just "parses" a bunch of tweets to extract some
     relevant information (i.e. right now entities).
@@ -145,7 +153,7 @@ def main():
 
     data_dir = Path(os.getenv("DATA_DIR", "data"))
     tweets_file_path = data_dir / "tweets_v1.json"
-    tweets = Tweets.model_validate_json(tweets_file_path.read_text())  # XXX use this
+    tweets = Tweets.model_validate_json(tweets_file_path.read_text())
 
     # Do a demo where we extract entities from a tweet
     # Model configuration
@@ -154,9 +162,7 @@ def main():
     prompt_dir = Path(os.getenv("PROMPT_DIR", "prompts"))
     output_dir = Path(os.getenv("OUTPUT_DIR", "output"))
     output_dir.mkdir(parents=True, exist_ok=True)
-    prompt_renderable = load_prompt_template(
-        "entity_extraction.jinja2", prompt_dir.resolve()
-    )
+    prompt_renderable = load_prompt_template(prompt_filename, prompt_dir.resolve())
     print("Generating prompts...")
     prompts = [prompt_renderable.render(text=tweet.tweet) for tweet in tweets.tweets]
     print("Generating responses...")
@@ -168,7 +174,7 @@ def main():
     )
     responses = [json.loads(r) for r in responses]
     # Save responses to file
-    with open(output_dir / "entity_extraction_responses.json", "w") as f:
+    with open(output_dir / output_filename, "w") as f:
         json.dump(responses, f, indent=4)
 
 
