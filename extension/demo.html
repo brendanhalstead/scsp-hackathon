@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TweetFact Checker Demo</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .demo-tweet {
+      border: 1px solid #cfd9de;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .tweet-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: #ccc;
+      margin-right: 12px;
+    }
+    
+    .user-info {
+      flex: 1;
+    }
+    
+    .user-name {
+      font-weight: bold;
+    }
+    
+    .user-handle {
+      color: #536471;
+    }
+    
+    .tweet-text {
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    
+    .tweet-actions {
+      display: flex;
+      justify-content: space-between;
+      color: #536471;
+      font-size: 14px;
+    }
+
+    h1, h2 {
+      color: #1da1f2;
+    }
+
+    .demo-controls {
+      margin: 30px 0;
+      padding: 15px;
+      background-color: #f7f9fa;
+      border-radius: 12px;
+    }
+
+    .demo-controls button {
+      background-color: #1da1f2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+
+    .demo-instructions {
+      background-color: #e8f5fd;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>TweetFact Checker Demo</h1>
+  
+  <div class="demo-instructions">
+    <h3>How to Use in a Real Environment</h3>
+    <ol>
+      <li>Upload the unpacked extension to Chrome (chrome://extensions)</li>
+      <li>Enable Developer Mode</li>
+      <li>Click "Load unpacked" and select the extension folder</li>
+      <li>Click the extension icon in your browser toolbar to access settings</li>
+      <li>In the settings page, add your OpenAI and Perplexity API keys (optional - will use demo mode if not provided)</li>
+      <li>Visit Twitter/X and click the "Fact Check" button on any tweet</li>
+    </ol>
+  </div>
+
+  <h2>Demonstration Tweets</h2>
+  <p>Click "Fact Check" on any tweet below to see how the extension works.</p>
+
+  <div class="demo-controls">
+    <button id="check-all">Fact Check All Examples</button>
+    <button id="reset-demo">Reset Demo</button>
+  </div>
+  
+  <div class="demo-tweet" data-testid="tweet">
+    <div class="tweet-header">
+      <div class="avatar"></div>
+      <div class="user-info">
+        <div class="user-name">Health News</div>
+        <div class="user-handle">@HealthUpdates</div>
+      </div>
+    </div>
+    <div class="tweet-text" data-testid="tweetText">
+      BREAKING: Studies show that the COVID vaccine causes serious side effects in over 50% of recipients. The spike proteins can also shed to unvaccinated people! Share to spread awareness! #VaccineRisks
+    </div>
+    <div class="tweet-actions" role="group">
+      <span>Comments: 245</span>
+      <span>Retweets: 867</span>
+      <span>Likes: 1.2K</span>
+    </div>
+  </div>
+  
+  <div class="demo-tweet" data-testid="tweet">
+    <div class="tweet-header">
+      <div class="avatar"></div>
+      <div class="user-info">
+        <div class="user-name">Election Truth</div>
+        <div class="user-handle">@ElectionUpdates</div>
+      </div>
+    </div>
+    <div class="tweet-text" data-testid="tweetText">
+      We all know the 2020 election had MASSIVE voter fraud. Mail-in ballots were sent without ANY verification! The courts refused to look at the evidence! #ElectionIntegrity
+    </div>
+    <div class="tweet-actions" role="group">
+      <span>Comments: 532</span>
+      <span>Retweets: 1.4K</span>
+      <span>Likes: 3.2K</span>
+    </div>
+  </div>
+  
+  <div class="demo-tweet" data-testid="tweet">
+    <div class="tweet-header">
+      <div class="avatar"></div>
+      <div class="user-info">
+        <div class="user-name">Climate Realist</div>
+        <div class="user-handle">@ClimateRealist</div>
+      </div>
+    </div>
+    <div class="tweet-text" data-testid="tweetText">
+      Scientists don't want you to know this: global temperatures have NOT increased in the last decade. CO2 is plant food, not pollution! The climate change agenda is about control, not science. #ClimateHoax
+    </div>
+    <div class="tweet-actions" role="group">
+      <span>Comments: 189</span>
+      <span>Retweets: 645</span>
+      <span>Likes: 1.1K</span>
+    </div>
+  </div>
+  
+  <div class="demo-tweet" data-testid="tweet">
+    <div class="tweet-header">
+      <div class="avatar"></div>
+      <div class="user-info">
+        <div class="user-name">Science News</div>
+        <div class="user-handle">@ScienceUpdates</div>
+      </div>
+    </div>
+    <div class="tweet-text" data-testid="tweetText">
+      A new study in Nature shows that regular exercise reduces the risk of heart disease by 30% and can add up to 5 years to your life expectancy. #HealthScience
+    </div>
+    <div class="tweet-actions" role="group">
+      <span>Comments: 78</span>
+      <span>Retweets: 342</span>
+      <span>Likes: 956</span>
+    </div>
+  </div>
+
+  <script src="content.js"></script>
+  <script src="demo.js"></script>
+</body>
+</html>

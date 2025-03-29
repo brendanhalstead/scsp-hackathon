@@ -1,0 +1,106 @@
+/* TweetFact Checker Styles */
+.fact-check-button {
+  background-color: #1da1f2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.fact-check-button:hover {
+  background-color: #0d8ecf;
+}
+
+.fact-check-overlay {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 8px;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.fact-check-overlay h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+}
+
+.fact-check-claim {
+  margin-bottom: 8px;
+  padding: 8px;
+  border-radius: 4px;
+  border-left: 4px solid #ccc;
+}
+
+.truth-value {
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.definitely-true {
+  background-color: #a8f0c6;
+  color: #0a6640;
+}
+
+.likely-true {
+  background-color: #d8f2bc;
+  color: #237804;
+}
+
+.needs-verification {
+  background-color: #ffe7ba;
+  color: #ad4e00;
+}
+
+.likely-false {
+  background-color: #ffd6e7;
+  color: #c41d7f;
+}
+
+.definitely-false {
+  background-color: #ffccc7;
+  color: #a8071a;
+}
+
+.sources {
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.sources a {
+  color: #1da1f2;
+  text-decoration: none;
+}
+
+.sources a:hover {
+  text-decoration: underline;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #1da1f2;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

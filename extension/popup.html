@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TweetFact Checker</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 15px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    
+    h2 {
+      color: #1da1f2;
+      text-align: center;
+      margin-top: 0;
+    }
+    
+    p {
+      color: #536471;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .status {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 4px;
+      background-color: #f7f9fa;
+    }
+    
+    .status-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    
+    .active {
+      background-color: #4CAF50;
+    }
+    
+    .inactive {
+      background-color: #F44336;
+    }
+    
+    .demo {
+      background-color: #FFC107;
+    }
+    
+    .status-text {
+      flex: 1;
+    }
+    
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    button {
+      background-color: #1da1f2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    
+    button:hover {
+      background-color: #0d8ecf;
+    }
+    
+    .settings-button {
+      background-color: #f7f9fa;
+      color: #536471;
+      border: 1px solid #cfd9de;
+    }
+    
+    .settings-button:hover {
+      background-color: #eff3f4;
+    }
+  </style>
+</head>
+<body>
+  <h2>TweetFact Checker</h2>
+  
+  <div id="status" class="status">
+    <div id="status-icon" class="status-icon demo"></div>
+    <div id="status-text" class="status-text">Checking extension status...</div>
+  </div>
+  
+  <p>
+    Click the "Fact Check" button under any tweet to verify factual claims 
+    and get truthfulness assessment with sources.
+  </p>
+  
+  <div class="buttons">
+    <button id="settings-button" class="settings-button">API Settings</button>
+    <button id="demo-button">Open Demo Page</button>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
