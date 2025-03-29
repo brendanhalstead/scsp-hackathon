@@ -2,6 +2,9 @@ Below you will see some claims that someone has made about the world. Please goo
 
 Claim: {{ claim }}
 
+For context, this is from the subject discussed in the following tweet: {{ tweet }}
+
+=====================================
 Please return a JSON dict for the claim that is parseable using json.loads(...). It must be a dictionary with two keys: "truth_value" and "explanation". The "truth_value" key should be one of "definately true", "likely true", "needs verification", "likely false", or "definately false". The "explanation" key should be a short sentence that explains why you think the claim is true or false. Always be more conservative if you are not sure. If the facts do not necessarily support the claim then try to air on the side of "needs verification". Answer with the other four options ("definately" or "likely" if there is evidence pointing to the claim being true or false (for "true" and "false" respectively).
 
 The JSON dict should NOT have any ticmarks, explanations, or other non-JSON text. I should be able to copy your ENTIRE output and json.loads it. Make sure it is a dictionary from string to string. Please answer below concisely:

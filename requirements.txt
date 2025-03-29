@@ -13,3 +13,5 @@ datasets
 Jinja2
 pydantic-yaml
 click
+fastapi[standard]
+uvicorn

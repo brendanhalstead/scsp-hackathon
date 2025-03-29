@@ -97,6 +97,7 @@ def perplexity_response(text: str) -> Any:
     Helper to query from perplexity API.
     """
     assert "PERPLEXITY_API_KEY" in os.environ, "PERPLEXITY_API_KEY is not set"
+    assert os.environ["PERPLEXITY_API_KEY"].strip() != "", "PERPLEXITY_API_KEY is empty"
 
     messages = [
         {
@@ -114,7 +115,6 @@ def perplexity_response(text: str) -> Any:
             "content": text,
         },
     ]
-
     client = OpenAI(
         api_key=os.environ["PERPLEXITY_API_KEY"], base_url="https://api.perplexity.ai"
     )
@@ -218,17 +218,22 @@ def main(prompt_filename: str, output_filename: str):
     responses = [json.loads(r) for r in responses]
     print("======== Creating claims =========")
     claims: List[str] = []
+    tweets_flat: List[str] = []
     sizes: List[int] = []
-    for resp in responses:
+    for t, resp in zip(tweets.tweets, responses):
         # NOTE: this assumes `claim_extraction2.jinja2` format
         claims.extend([c["claim"] for c in resp])
+        tweets_flat.extend([t.tweet for _ in resp])
         sizes.append(len(resp))
     assert all(isinstance(c, str) for c in claims), "Claims must be strings"
     print("======== Creating perplexity prompts =========")
     claim_prompt_template = load_prompt_template(
         "claim_fact_check.jinja2", prompt_dir.resolve()
     )
-    claims_prompts = [claim_prompt_template.render(claim=c) for c in claims]
+    claims_prompts = [
+        claim_prompt_template.render(claim=c, tweet=t)
+        for c, t in zip(claims, tweets_flat)
+    ]
     print("======== Querying perplexity =========")
     perplexity_responses = api_generate(
         claims_prompts,
@@ -253,6 +258,7 @@ def main(prompt_filename: str, output_filename: str):
     # perplexity_response_contents = [json.loads(t) for t in perplexity_response_contents]
     # perplexity_response_truth_values = [t["truth_value"] for t in perplexity_response_contents]
     # perplexity_response_explanations = [t["explanation"] for t in perplexity_response_contents]
+    outputs = []
     for i, (
         tweet_obj,
         openai_response,
@@ -270,9 +276,10 @@ def main(prompt_filename: str, output_filename: str):
             # perplexity_response_explanation,
         )
     ):
-        print("=" * 50)
-        print(f"Tweet {i+1} of {len(tweets.tweets)}")
-        print("Claims:")
+        # print("=" * 50)
+        # print(f"Tweet {i+1} of {len(tweets.tweets)}")
+        # print("Claims:")
+        # print(perplexity_responses_block) # XXX
         truth_values = [
             json.loads(p.choices[0].message.content)["truth_value"]
             for p in perplexity_responses_block
@@ -281,28 +288,43 @@ def main(prompt_filename: str, output_filename: str):
             json.loads(p.choices[0].message.content)["explanation"]
             for p in perplexity_responses_block
         ]
-        assert len(truth_values) == len(openai_response)
-        if len(openai_response) >= 1:
-            print(
-                "  - "
-                + "\n  - ".join(
-                    f'{c["claim"]} ({truth_value}: {explanation})'
-                    for c, truth_value, explanation in zip(openai_response, truth_values, explanations)
-                )
-            )
-        else:
-            print("  No claims found")
-        print("")
+        citations = [p.citations[:3] for p in perplexity_responses_block]
+        outputs.append(
+            {
+                "claims": [
+                    {
+                        "claim": x["claim"],
+                        "truthworthiness": truth_values[i],
+                        "trustworthiness_explanation": explanations[i],
+                        "top3_citations": citations[i][:3],
+                    }
+                    for i, x in enumerate(openai_response)
+                ],
+                "tweet": tweet_obj.tweet,
+            }
+        )
+        # assert len(truth_values) == len(openai_response)
+        # if len(openai_response) >= 1:
+        #     print(
+        #         "  - "
+        #         + "\n  - ".join(
+        #             f'{c["claim"]} ({truth_value}: {explanation})'
+        #             for c, truth_value, explanation in zip(openai_response, truth_values, explanations)
+        #         )
+        #     )
+        # else:
+        #     print("  No claims found")
+        # print("")
 
-        print(f"Tweet: {tweet_obj.tweet}")
-        print("Citations:")
-        for per_claim in perplexity_responses_block:
-            print("  Per-claim citations:")
-            print("    -" + "\n    - ".join(per_claim.citations))
-        print("=" * 50)
+        # print(f"Tweet: {tweet_obj.tweet}")
+        # print("Citations:")
+        # for per_claim in perplexity_responses_block:
+        #     print("  Per-claim citations:")
+        #     print("    -" + "\n    - ".join(per_claim.citations[:3]))
+        # print("=" * 50)
     # Save responses to file
-    # with open(output_dir / output_filename, "w") as f:
-    #     json.dump(responses, f, indent=4)
+    with open(output_dir / output_filename, "w") as f:
+        json.dump(outputs, f, indent=4)
 
 
 if __name__ == "__main__":
