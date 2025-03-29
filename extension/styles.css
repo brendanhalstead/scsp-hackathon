@@ -16,6 +16,7 @@
 
 .fact-check-overlay {
   background-color: white;
+  color: black;
   border: 1px solid #ccc;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -27,6 +28,7 @@
 .fact-check-overlay h4 {
   margin: 0 0 8px 0;
   font-size: 16px;
+  color: black;
 }
 
 .fact-check-claim {
@@ -34,6 +36,7 @@
   padding: 8px;
   border-radius: 4px;
   border-left: 4px solid #ccc;
+  color: black;
 }
 
 .truth-value {
@@ -72,6 +75,7 @@
 .sources {
   margin-top: 8px;
   font-size: 12px;
+  color: black;
 }
 
 .sources a {
@@ -88,6 +92,7 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
+  color: black;
 }
 
 .spinner {
