@@ -8,9 +8,11 @@ import litellm
 import pydantic
 from typing import List, Dict, Union
 from pathlib import Path
+from tqdm import tqdm
 
 # Load environment variables from .env file
 load_dotenv()
+
 
 class Tweet(pydantic.BaseModel):
     username: str
@@ -19,10 +21,12 @@ class Tweet(pydantic.BaseModel):
     replying_to: List[str]
     tweet: str
 
+
 class Tweets(pydantic.BaseModel):
     session_id: str
     retrieved_by: str
     tweets: List[Tweet]
+
 
 def api_generate(
     prompts: Union[List[str], List[List[Dict[str, str]]]],
@@ -73,9 +77,15 @@ def api_generate(
 
     return new_texts
 
+
 if __name__ == "__main__":
     # Configure logging
-    logging_enabled = os.getenv("ENABLE_LOGGING", "false").lower() in ["true", "1", "yes", "y"]
+    logging_enabled = os.getenv("ENABLE_LOGGING", "false").lower() in [
+        "true",
+        "1",
+        "yes",
+        "y",
+    ]
     log_level = os.getenv("LOG_LEVEL", "info").upper()
     log_dir = Path(os.getenv("LOG_DIR", "logs"))
     log_file_path = log_dir / "api_requests.log"
@@ -95,12 +105,17 @@ if __name__ == "__main__":
 
     data_dir = Path(os.getenv("DATA_DIR", "data"))
     tweets_file_path = data_dir / "tweets_v1.json"
-    tweets = Tweets.model_validate_json(tweets_file_path.read_text()) # XXX use this
+    tweets = Tweets.model_validate_json(tweets_file_path.read_text())  # XXX use this
 
     # XXX
     # Model configuration
     model_name = os.getenv("MODEL_NAME", "gpt-4-turbo")
     max_tokens = int(os.getenv("MAX_TOKENS", 4096))
     temperature = float(os.getenv("TEMPERATURE", 0.7))
-    responses = api_generate(["Say 'hello' five times then do a somersault"], model=model_name, max_new_tokens=max_tokens, temperature=temperature)
+    responses = api_generate(
+        ["Say 'hello' five times then do a somersault"],
+        model=model_name,
+        max_new_tokens=max_tokens,
+        temperature=temperature,
+    )
     print(responses)

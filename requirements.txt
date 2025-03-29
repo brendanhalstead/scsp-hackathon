@@ -1,3 +1,11 @@
 dotenv
 openai
 litellm
+tqdm
+numpy
+pydantic
+torch
+jaxtyping
+transformers
+modal
+datasets
