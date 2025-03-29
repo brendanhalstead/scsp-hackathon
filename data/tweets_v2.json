@@ -363,6 +363,7 @@
       "tweet": "Does not seem like things are going so well. Time for peace before all of Ukraine is lost to Russia."
     },
     {
+      "retrieved_by": "ukraine war",
       "username": "Ghost of Donetsk",
       "handle": "@TwstC13310",
       "followers": 44,
@@ -371,10 +372,10 @@
       "likes": 1,
       "reposts": 0,
       "replies": 0,
-      "text": "According to DeepStateMap, the Russians used their teleportation weapon again to enter Rozlyv.",
-      "language": "en",
+      "lang": "en",
       "replying_to": [
-      ]
+      ],
+      "tweet": "According to DeepStateMap, the Russians used their teleportation weapon again to enter Rozlyv."
     },
     {
       "retrieved_by": "ukraine war",
@@ -386,10 +387,10 @@
       "likes": 1,
       "reposts": 0,
       "replies": 0,
-      "text": "Time for a complete withdrawal of support from #UkraineWar\nThe Brits and French are sending troops and the Germans are openly talking about war with Russia. WWIII can happen without US. #AmericaFirst",
-      "language": "en",
+      "lang": "en",
       "replying_to": [
-      ]
+      ],
+      "tweet": "Time for a complete withdrawal of support from #UkraineWar\nThe Brits and French are sending troops and the Germans are openly talking about war with Russia. WWIII can happen without US. #AmericaFirst"
     },
     {
       "retrieved_by": "ukraine war",
@@ -401,10 +402,10 @@
       "likes": 1,
       "reposts": 1,
       "replies": 0,
-      "text": "79% of Americans say Russia will violate the ceasefire with Ukraine. 76% of Americans want US to support Ukraine. 46% of Americans say, US is not doing enough for Ukraine. #UkraineWar",
-      "language": "en",
+      "lang": "en",
       "replying_to": [
-      ]
+      ],
+      "tweet": "79% of Americans say Russia will violate the ceasefire with Ukraine. 76% of Americans want US to support Ukraine. 46% of Americans say, US is not doing enough for Ukraine. #UkraineWar"
     },
     {
       "retrieved_by": "ukraine war",
@@ -416,10 +417,10 @@
       "likes": 0,
       "reposts": 0,
       "replies": 0,
-      "text": "Hungary's PM: Europe had its chance for Ukraine peace with Minsk agreements but FAILED\n\nOrbán says Brussels needs to 'fully support America’s efforts for peace' instead of making their own 'war strategy'.",
-      "language": "en",
+      "lang": "en",
       "replying_to": [
-      ]
+      ],
+      "tweet": "Hungary's PM: Europe had its chance for Ukraine peace with Minsk agreements but FAILED\n\nOrbán says Brussels needs to 'fully support America’s efforts for peace' instead of making their own 'war strategy'."
     },
     {
       "retrieved_by": "ukraine war",
@@ -431,10 +432,10 @@
       "likes": 2,
       "reposts": 0,
       "replies": 0,
-      "text": "Ukraine has a just under a quarter of the population that Russia has.\n\nOver a million people have been killed, wounded or missing\n\nUkraine is running out of men and boys.\n\nHow is this war winnable without expanding it?\n\nAnswer: It isn’t.",
-      "language": "en",
+      "lang": "en",
       "replying_to": [
-      ]
+      ],
+      "tweet": "Ukraine has a just under a quarter of the population that Russia has.\n\nOver a million people have been killed, wounded or missing\n\nUkraine is running out of men and boys.\n\nHow is this war winnable without expanding it?\n\nAnswer: It isn’t."
     },
       {
         "retrieved_by": "ukraine war",
