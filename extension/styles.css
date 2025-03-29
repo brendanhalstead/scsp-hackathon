@@ -1,4 +1,13 @@
 /* TweetFact Checker Styles */
+/* Add Sans-Serif Font Family Definition */
+.fact-check-button,
+.fact-check-overlay,
+.fact-check-claim,
+.truth-value,
+.sources,
+.loading {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
 .fact-check-button {
   background-color: #1da1f2;
   color: white;

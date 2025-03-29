@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perplexity API CORS Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.5;
+    }
+    .container {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    button {
+      background-color: #1da1f2;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow: auto;
+      max-height: 300px;
+      white-space: pre-wrap;
+    }
+    .error {
+      color: red;
+    }
+    .success {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <h1>Perplexity API CORS Test</h1>
+  <p>This simple page tests if there are CORS issues with the Perplexity API.</p>
+  
+  <div class="container">
+    <h2>API Key</h2>
+    <input type="password" id="api-key" placeholder="Enter your Perplexity API key (pplx-...)">
+  </div>
+  
+  <div class="container">
+    <h2>Tests</h2>
+    <button id="test-preflight">1. Test OPTIONS Preflight</button>
+    <button id="test-simple-get">2. Test Simple GET</button>
+    <button id="test-simple-post">3. Test Simple POST</button>
+    <button id="test-full-api">4. Test Full API Call</button>
+  </div>
+  
+  <div class="container">
+    <h2>Results</h2>
+    <pre id="results">Run a test to see results here...</pre>
+  </div>
+  
+  <script>
+    const apiKeyInput = document.getElementById('api-key');
+    const testPreflightBtn = document.getElementById('test-preflight');
+    const testSimpleGetBtn = document.getElementById('test-simple-get');
+    const testSimplePostBtn = document.getElementById('test-simple-post');
+    const testFullApiBtn = document.getElementById('test-full-api');
+    const resultsElement = document.getElementById('results');
+    
+    // Helper function to append results
+    function appendResult(message, isError = false, isSuccess = false) {
+      const className = isError ? 'error' : (isSuccess ? 'success' : '');
+      const timestamp = new Date().toLocaleTimeString();
+      resultsElement.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+      resultsElement.scrollTop = resultsElement.scrollHeight;
+    }
+    
+    // Clear results
+    function clearResults() {
+      resultsElement.innerHTML = '';
+    }
+    
+    // Test OPTIONS preflight request
+    testPreflightBtn.addEventListener('click', async () => {
+      clearResults();
+      appendResult('Testing OPTIONS preflight request...');
+      
+      try {
+        // Using fetch with mode: 'cors' explicitly to test CORS
+        const response = await fetch('https://api.perplexity.ai/chat/completions', {
+          method: 'OPTIONS',
+          mode: 'cors',
+          headers: {
+            'Access-Control-Request-Method': 'POST',
+            'Access-Control-Request-Headers': 'Content-Type, Authorization',
+            'Origin': window.location.origin
+          }
+        });
+        
+        appendResult(`Response status: ${response.status} ${response.statusText}`);
+        
+        // Log all response headers
+        appendResult('Response headers:');
+        for (const [key, value] of response.headers.entries()) {
+          appendResult(`  ${key}: ${value}`);
+        }
+        
+        // Check if proper CORS headers are present
+        const corsHeader = response.headers.get('Access-Control-Allow-Origin');
+        if (corsHeader) {
+          appendResult(`CORS header found: Access-Control-Allow-Origin: ${corsHeader}`, false, true);
+        } else {
+          appendResult('CORS header missing: Access-Control-Allow-Origin', true);
+        }
+        
+      } catch (error) {
+        appendResult(`Error: ${error.message}`, true);
+        console.error('Full error:', error);
+      }
+    });
+    
+    // Test simple GET request
+    testSimpleGetBtn.addEventListener('click', async () => {
+      clearResults();
+      appendResult('Testing simple GET request...');
+      
+      try {
+        const response = await fetch('https://api.perplexity.ai/chat/completions', {
+          method: 'GET',
+          mode: 'cors'
+        });
+        
+        appendResult(`Response status: ${response.status} ${response.statusText}`);
+        
+        const text = await response.text();
+        appendResult(`Response body: ${text.substring(0, 150)}${text.length > 150 ? '...' : ''}`);
+        
+      } catch (error) {
+        appendResult(`Error: ${error.message}`, true);
+        console.error('Full error:', error);
+      }
+    });
+    
+    // Test simple POST request
+    testSimplePostBtn.addEventListener('click', async () => {
+      clearResults();
+      appendResult('Testing simple POST request...');
+      
+      const apiKey = apiKeyInput.value.trim();
+      if (!apiKey) {
+        appendResult('Please enter an API key', true);
+        return;
+      }
+      
+      try {
+        const response = await fetch('https://api.perplexity.ai/chat/completions', {
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'sonar-small-chat',
+            messages: [{ role: 'user', content: 'Hello' }],
+            max_tokens: 5
+          })
+        });
+        
+        appendResult(`Response status: ${response.status} ${response.statusText}`);
+        
+        // Log all response headers
+        appendResult('Response headers:');
+        for (const [key, value] of response.headers.entries()) {
+          appendResult(`  ${key}: ${value}`);
+        }
+        
+        const data = await response.json();
+        appendResult(`Response body: ${JSON.stringify(data, null, 2)}`);
+        
+      } catch (error) {
+        appendResult(`Error: ${error.message}`, true);
+        console.error('Full error:', error);
+      }
+    });
+    
+    // Test full API call
+    testFullApiBtn.addEventListener('click', async () => {
+      clearResults();
+      appendResult('Testing full API call...');
+      
+      const apiKey = apiKeyInput.value.trim();
+      if (!apiKey) {
+        appendResult('Please enter an API key', true);
+        return;
+      }
+      
+      try {
+        // Use the XMLHttpRequest API instead of fetch as an alternative
+        appendResult('Using XMLHttpRequest instead of fetch...');
+        
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://api.perplexity.ai/chat/completions', true);
+        
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('Authorization', `Bearer ${apiKey}`);
+        
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4) {
+            appendResult(`Response status: ${xhr.status}`);
+            
+            appendResult('Response headers:');
+            const headers = xhr.getAllResponseHeaders().split('\r\n');
+            for (const header of headers) {
+              if (header) {
+                appendResult(`  ${header}`);
+              }
+            }
+            
+            try {
+              const data = JSON.parse(xhr.responseText);
+              appendResult(`Response body: ${JSON.stringify(data, null, 2)}`);
+            } catch (e) {
+              appendResult(`Response body (raw): ${xhr.responseText}`);
+            }
+          }
+        };
+        
+        xhr.onerror = function() {
+          appendResult('XHR error occurred', true);
+        };
+        
+        const data = {
+          model: 'sonar-small-chat',
+          messages: [
+            {
+              role: 'user',
+              content: 'Please respond with a very short message for a CORS test.'
+            }
+          ],
+          max_tokens: 20
+        };
+        
+        xhr.send(JSON.stringify(data));
+        appendResult('Request sent, waiting for response...');
+        
+      } catch (error) {
+        appendResult(`Error: ${error.message}`, true);
+        console.error('Full error:', error);
+      }
+    });
+  </script>
+</body>
+</html>
