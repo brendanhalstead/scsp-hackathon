@@ -11,7 +11,7 @@ import openai
 import litellm
 from datetime import datetime
 import pydantic
-from typing import List, Dict, Union, Any, Tuple
+from typing import List, Dict, Union, Any, Tuple, Optional
 from pathlib import Path
 import tqdm
 
@@ -20,16 +20,23 @@ load_dotenv()
 
 
 class Tweet(pydantic.BaseModel):
-    username: str
-    handle: str
-    timestamp: str
-    replying_to: List[str]
+    username: Optional[str] = None
+    handle: Optional[str] = None
+    timestamp: Optional[str] = None
+    replying_to: Optional[List[str]] = None
     tweet: str
+    retrieved_by: Optional[str] = None
+    followers: Optional[int] = None
+    following: Optional[int] = None
+    likes: Optional[int] = None
+    reposts: Optional[int] = None
+    replies: Optional[int] = None
+    lang: Optional[str] = None
 
 
 class Tweets(pydantic.BaseModel):
-    session_id: str
-    retrieved_by: str
+    session_id: Optional[str] = None
+    retrieved_by: Optional[str] = None
     tweets: List[Tweet]
 
 
@@ -193,7 +200,7 @@ def main(prompt_filename: str, output_filename: str):
         logger.info("Logging initialized")
 
     data_dir = Path(os.getenv("DATA_DIR", "data"))
-    tweets_file_path = data_dir / "tweets_v1.json"
+    tweets_file_path = data_dir / "tweets_v2.json"
     #tweets = Tweets.model_validate_json(tweets_file_path.read_text())
     tweets = Tweets.model_validate_json(tweets_file_path.read_text(encoding="utf-8"))
 
