@@ -153,7 +153,9 @@ def main(prompt_filename: str, output_filename: str):
 
     data_dir = Path(os.getenv("DATA_DIR", "data"))
     tweets_file_path = data_dir / "tweets_v1.json"
-    tweets = Tweets.model_validate_json(tweets_file_path.read_text())
+    #tweets = Tweets.model_validate_json(tweets_file_path.read_text())
+    tweets = Tweets.model_validate_json(tweets_file_path.read_text(encoding="utf-8"))
+
 
     # Do a demo where we extract entities from a tweet
     # Model configuration
