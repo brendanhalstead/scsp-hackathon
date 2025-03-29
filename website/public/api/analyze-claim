@@ -1,0 +1,25 @@
+
+{
+  "claims": [
+    {
+      "claim": "Ukrainian forces have successfully repelled Russian attacks in the Kharkiv region",
+      "confidence": 0.87,
+      "sources": [
+        "Official Ukrainian Government Portal",
+        "Institute for War Studies", 
+        "Independent OSINT analysts"
+      ]
+    },
+    {
+      "claim": "Civilian casualties were reported during the engagement",
+      "confidence": 0.64,
+      "sources": [
+        "International Red Cross",
+        "Kharkiv Regional News", 
+        "RIA Novosti"
+      ]
+    }
+  ],
+  "summary": "The claim about Ukrainian forces repelling Russian attacks in Kharkiv region appears to be supported by multiple sources, though with some conflicting details about civilian impact. Military officials from both sides have made contradictory statements, but satellite imagery and independent observers confirm Ukrainian defensive positions have held against recent offensive operations.",
+  "dataQuality": 0.82
+}

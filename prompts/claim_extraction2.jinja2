@@ -1,0 +1,27 @@
+Extract any concrete claims from the tweet text below. Ignore any opinions, or vague statements. Let me give you some examples:
+
+Concrete claims:
+- DeepSeek developed a new AI model called R1 that performs better than GPT-4 on ARC-AGI
+- Russia has moved short-range nuclear missiles closer to the border with Ukraine
+- A new voice startup is claimed to be more human-like than previous whisper models
+- Polls show that americans do not agree on how much or even whether to fund the war in Ukraine, with close to half opposing further funding and half supporting it
+- Eating fried foods has been linked to heart health issues according to the American Heart Association
+- The united states has not been the lead developer of DRAM memory chips by market share since the late 1970's and the rise of Japanese DRAM production
+- TSMC has over 80% of the market share for logic chips in the 1-3 nanometer range.
+
+Non-claims (either opinions, vague or vacuous statements):
+- The united states is evil
+- I ate 21 entire kentucky fried chickens. You won't believe what happened next
+- DeepSeek AI has revolutionized the geopolitical balance of power in the AI arms race between China and the US
+- We need to divest from the military industrial complex to be able to live in a free society
+- The united states is really not that bad but there's a lot of chaos here
+- There are those who seek to divide us
+- It's been a super long time since the US was leading in chip production. Now TSMC dominates the market.
+- We should all vote more often.
+- You probably thought that detox kale smoothies were good for new, but new research suggests that the real answer may be unexpected. Detox is not necessarily what we all thought (1/n)
+
+As you can see, claims are CONCRETE and FACTUAL. They are FALSIFIABLE and/or VERIFIABLE. For example they should correspond to real, tangible events in the real world. Vague or vacuous claims or opinions are often subjective, whereas regular claims were objective. They also leave some unanswered question and do not establish a clear truth. Below you will get some text. Please give a list of short sentences that establish the claims of the tweet (text). If there are no claims, return an empty list.
+
+{{ text }}
+
+Please return a JSON list of claims that is parseable using json.loads(...). It must be a list of dictionaries with two keys: "claim" and "truthworthiness". The "truthworthiness" key should be a quick sentence that says "this is likely true" if the claim is likely true, or "this is likely false" if the claim is likely false or "needs verification" if the claim's truth value may not be known. Always air on the side of caution but you may classify objective claims (such as "the sky is blue" or "the sun is the center of the solar system" or things which are definately true). The value for "claim" should be a string. Make sure therefore to return a list of dictionaries from string to string. Remember, this must be parseable. I must be able to copy ALL your text, so there should be NO ticmarks, NO explanation, and NO additional non-JSON text. ALL text should be JSON.

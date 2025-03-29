@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "TweetFact Checker",
+  "version": "1.0",
+  "description": "Fact-check tweets in real time",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": ["https://twitter.com/*", "https://x.com/*", "https://api.openai.com/*", "https://api.perplexity.ai/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://twitter.com/*", "https://x.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "options.html",
+  "icons": {
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["demo.html", "demo.js", "styles.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
