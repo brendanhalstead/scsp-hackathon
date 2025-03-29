@@ -5,12 +5,13 @@ import math
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 import logging
+from openai import OpenAI
 from dotenv import load_dotenv
 import openai
 import litellm
 from datetime import datetime
 import pydantic
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Any, Tuple
 from pathlib import Path
 import tqdm
 
@@ -36,9 +37,10 @@ def api_generate(
     prompts: Union[List[str], List[List[Dict[str, str]]]],
     model: str,
     num_retries: int = 4,
-    batch_size: int = 16,
+    batch_size: int = 20,
     max_new_tokens=128,
     tqdm_enabled: bool = False,  # Nawwww
+    convert_to_text: bool = True,
 ) -> List[str]:
     """
     This is a helper function to make it easy to generate using various LLM APIs
@@ -52,6 +54,7 @@ def api_generate(
             {"role": "user", "content": user_input1},
             ...
         ]
+    TODO(Adriano) you might want to add system prompts.
     """
 
     # If we pass a list of prompts, convert to message format
@@ -76,15 +79,53 @@ def api_generate(
                 num_retries=num_retries,
             )
             responses.extend(r)
-        new_texts = [r.choices[0].message.content for r in responses]
+        ret = responses
+        if convert_to_text:
+            ret = [r.choices[0].message.content for r in responses]
 
     except openai.OpenAIError as e:
         # Error handling
         should_retry = litellm._should_retry(e.status_code)
         print("Error: API failed to respond.", e, f"should_retry: {should_retry}")
-        new_texts = []
+        ret = []
 
-    return new_texts
+    return ret
+
+
+def perplexity_response(text: str) -> Any:
+    """
+    Helper to query from perplexity API.
+    """
+    assert "PERPLEXITY_API_KEY" in os.environ, "PERPLEXITY_API_KEY is not set"
+
+    messages = [
+        {
+            # TODO(Adriano) the system prompt should not be hardcoded ay lmao
+            "role": "system",
+            "content": (
+                "You are an artificial intelligence assistant and you need to help fact check tweets and other information "
+                + "the user may share with you. At all times make sure to be helpful, concise, and do NOT act overconfident. "
+                + "Cite everything you do, search for relevant and reliable sources (such as official news sources from reliable "
+                + "outlets such as the NYT, BBC, WSJ, AP News, etc...) and if the answers are not clear say you don't know. Back up every single claim."
+            ),
+        },
+        {
+            "role": "user",
+            "content": text,
+        },
+    ]
+
+    client = OpenAI(
+        api_key=os.environ["PERPLEXITY_API_KEY"], base_url="https://api.perplexity.ai"
+    )
+
+    # chat completion without streaming
+    response = client.chat.completions.create(
+        model="sonar-pro",
+        messages=messages,
+    )
+    # print(response)
+    return response
 
 
 def load_prompt_template(
@@ -163,19 +204,105 @@ def main(prompt_filename: str, output_filename: str):
     output_dir = Path(os.getenv("OUTPUT_DIR", "output"))
     output_dir.mkdir(parents=True, exist_ok=True)
     prompt_renderable = load_prompt_template(prompt_filename, prompt_dir.resolve())
-    print("Generating prompts...")
+    print("======== Generating prompts =========")
     prompts = [prompt_renderable.render(text=tweet.tweet) for tweet in tweets.tweets]
-    print("Generating responses...")
+    print("======== Generating responses =========")
     responses = api_generate(
         prompts,
         model=model_name,
         max_new_tokens=max_tokens,
         tqdm_enabled=True,
+        convert_to_text=True,
     )
+    print(responses)
     responses = [json.loads(r) for r in responses]
+    print("======== Creating claims =========")
+    claims: List[str] = []
+    sizes: List[int] = []
+    for resp in responses:
+        # NOTE: this assumes `claim_extraction2.jinja2` format
+        claims.extend([c["claim"] for c in resp])
+        sizes.append(len(resp))
+    assert all(isinstance(c, str) for c in claims), "Claims must be strings"
+    print("======== Creating perplexity prompts =========")
+    claim_prompt_template = load_prompt_template(
+        "claim_fact_check.jinja2", prompt_dir.resolve()
+    )
+    claims_prompts = [claim_prompt_template.render(claim=c) for c in claims]
+    print("======== Querying perplexity =========")
+    perplexity_responses = api_generate(
+        claims_prompts,
+        model="perplexity/sonar-pro",
+        max_new_tokens=max_tokens,
+        tqdm_enabled=True,
+        convert_to_text=False,
+    )
+    print("======== Creating blocks =========")
+    perplexity_responses_blocks = []
+    i = 0
+    for size in sizes:
+        i_start = i
+        i_end = i + size
+        perplexity_responses_blocks.append(perplexity_responses[i_start:i_end])
+        i = i_end
+    assert len(perplexity_responses_blocks) == len(sizes) == len(responses) == len(tweets.tweets), f"Lengths must match: {len(perplexity_responses_blocks)} != {len(sizes)} != {len(responses)} != {len(tweets.tweets)}" # fmt: skip
+    # print("======== Creating perplexity responses =========")
+    # assert all(len(c.choices) == 1 for c in perplexity_responses), "Perplexity responses must have exactly one choice" # fmt: skip
+    # perplexity_response_contents = [p.choices[0].message.content for p in perplexity_responses]
+    # perplexity_response_citations = [p.choices[0].citations for p in perplexity_responses]
+    # perplexity_response_contents = [json.loads(t) for t in perplexity_response_contents]
+    # perplexity_response_truth_values = [t["truth_value"] for t in perplexity_response_contents]
+    # perplexity_response_explanations = [t["explanation"] for t in perplexity_response_contents]
+    for i, (
+        tweet_obj,
+        openai_response,
+        perplexity_responses_block,
+        # perplexity_response_citation,
+        # perplexity_response_truth_value,
+        # perplexity_response_explanation,
+    ) in enumerate(
+        zip(
+            tweets.tweets,
+            responses,
+            perplexity_responses_blocks,
+            # perplexity_response_citation,
+            # perplexity_response_truth_value,
+            # perplexity_response_explanation,
+        )
+    ):
+        print("=" * 50)
+        print(f"Tweet {i+1} of {len(tweets.tweets)}")
+        print("Claims:")
+        truth_values = [
+            json.loads(p.choices[0].message.content)["truth_value"]
+            for p in perplexity_responses_block
+        ]
+        explanations = [
+            json.loads(p.choices[0].message.content)["explanation"]
+            for p in perplexity_responses_block
+        ]
+        assert len(truth_values) == len(openai_response)
+        if len(openai_response) >= 1:
+            print(
+                "  - "
+                + "\n  - ".join(
+                    f'{c["claim"]} ({truth_value}: {explanation})'
+                    for c, truth_value, explanation in zip(openai_response, truth_values, explanations)
+                )
+            )
+        else:
+            print("  No claims found")
+        print("")
+
+        print(f"Tweet: {tweet_obj.tweet}")
+        print("Citations:")
+        for per_claim in perplexity_responses_block:
+            print("  Per-claim citations:")
+            print("    -" + "\n    - ".join(per_claim.citations))
+        print("=" * 50)
     # Save responses to file
-    with open(output_dir / output_filename, "w") as f:
-        json.dump(responses, f, indent=4)
+    # with open(output_dir / output_filename, "w") as f:
+    #     json.dump(responses, f, indent=4)
 
 
 if __name__ == "__main__":
