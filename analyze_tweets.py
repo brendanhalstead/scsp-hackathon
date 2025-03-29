@@ -111,11 +111,9 @@ if __name__ == "__main__":
     # Model configuration
     model_name = os.getenv("MODEL_NAME", "gpt-4-turbo")
     max_tokens = int(os.getenv("MAX_TOKENS", 4096))
-    temperature = float(os.getenv("TEMPERATURE", 0.7))
     responses = api_generate(
         ["Say 'hello' five times then do a somersault"],
         model=model_name,
-        max_new_tokens=max_tokens,
-        temperature=temperature,
+        max_new_tokens=max_tokens
     )
     print(responses)
