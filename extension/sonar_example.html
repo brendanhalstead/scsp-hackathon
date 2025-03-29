@@ -118,7 +118,8 @@
           
           Claim: "${claim}"
           
-          JSON Response:
+          IMPORTANT: Return ONLY a raw JSON object with no markdown formatting, code blocks, or additional text.
+          Just return a simple, valid JSON object that can be parsed with JSON.parse().
         `;
         
         // Make the API call
@@ -149,8 +150,28 @@
           const resultText = data.choices[0].message.content;
           
           try {
+            // Clean the response if it contains markdown formatting
+            let cleanedText = resultText;
+            
+            // Remove markdown code blocks if present
+            if (cleanedText.includes('```json')) {
+              cleanedText = cleanedText.replace(/```json/g, '');
+              cleanedText = cleanedText.replace(/```/g, '');
+            }
+            
+            // Attempt to find valid JSON anywhere in the response
+            let jsonStart = cleanedText.indexOf('{');
+            let jsonEnd = cleanedText.lastIndexOf('}');
+            
+            if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+              // Extract what looks like the JSON part
+              cleanedText = cleanedText.substring(jsonStart, jsonEnd + 1);
+            }
+            
+            console.log("Attempting to parse cleaned JSON:", cleanedText);
+            
             // Try to parse the JSON response
-            const factCheckResult = JSON.parse(resultText);
+            const factCheckResult = JSON.parse(cleanedText);
             
             // Format a nice display of the result
             let formattedResult = `<span class="success">✅ API call successful!</span>\n\n`;
