@@ -23,7 +23,7 @@ class Tweet(pydantic.BaseModel):
     username: Optional[str] = None
     handle: Optional[str] = None
     timestamp: Optional[str] = None
-    replying_to: Optional[List[str]] = None
+    replying_to: List[str] = []
     tweet: str
     retrieved_by: Optional[str] = None
     followers: Optional[int] = None
@@ -35,8 +35,8 @@ class Tweet(pydantic.BaseModel):
 
 
 class Tweets(pydantic.BaseModel):
-    session_id: Optional[str] = None
-    retrieved_by: Optional[str] = None
+    # session_id: Optional[str] = None
+    # retrieved_by: Optional[str] = None
     tweets: List[Tweet]
 
 
@@ -201,9 +201,12 @@ def main(prompt_filename: str, output_filename: str):
 
     data_dir = Path(os.getenv("DATA_DIR", "data"))
     tweets_file_path = data_dir / "tweets_v2.json"
-    #tweets = Tweets.model_validate_json(tweets_file_path.read_text())
-    tweets = Tweets.model_validate_json(tweets_file_path.read_text(encoding="utf-8"))
-
+    # tweets = Tweets.model_validate_json(tweets_file_path.read_text())
+    # tweets = Tweets.model_validate_json(tweets_file_path.read_text(encoding="utf-8"))
+    with open(tweets_file_path, "r") as f:
+        tweets = json.load(f)
+        tweets = tweets["tweets"]
+        tweets = Tweets(tweets=[Tweet(tweet=t["tweet"] if "tweet" in t else "no tweet found") for t in tweets])
 
     # Do a demo where we extract entities from a tweet
     # Model configuration
