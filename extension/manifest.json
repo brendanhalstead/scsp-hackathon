@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "TweetFact Checker",
+  "name": "Aletheia",
   "version": "1.0",
-  "description": "Fact-check tweets in real time",
+  "description": "Aletheia: Truth verification for social media in real time",
   "permissions": ["activeTab", "storage"],
   "host_permissions": ["https://twitter.com/*", "https://x.com/*", "https://api.openai.com/*", "https://api.perplexity.ai/*"],
   "content_scripts": [

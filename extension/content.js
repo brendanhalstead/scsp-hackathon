@@ -1,6 +1,6 @@
 /**
- * TweetFact Checker - Content Script
- * Adds fact-checking capability to Twitter/X
+ * Aletheia - Content Script
+ * Adds truth verification capabilities to Twitter/X
  */
 
 // We'll retrieve API keys from secure storage
@@ -253,7 +253,8 @@ async function factCheckClaims(claims) {
           
           Claim: "${claim}"
           
-          JSON Response:
+          IMPORTANT: Return ONLY a raw JSON object with no markdown formatting, code blocks, or additional text.
+          Just return a simple, valid JSON object that can be parsed with JSON.parse().
         `;
         
         // Make API request to Perplexity
@@ -264,7 +265,7 @@ async function factCheckClaims(claims) {
             'Authorization': `Bearer ${PERPLEXITY_API_KEY}`
           },
           body: JSON.stringify({
-            model: 'sonar-small-chat', // Using smaller model for faster response
+            model: 'sonar', // Using model that works in browser context
             messages: [
               {
                 role: 'system',
@@ -285,8 +286,28 @@ async function factCheckClaims(claims) {
         const resultText = data.choices[0].message.content.trim();
         
         try {
-          // Parse the JSON response
-          const factCheckResult = JSON.parse(resultText);
+          // Clean the response if it contains markdown formatting
+          let cleanedText = resultText;
+          
+          // Remove markdown code blocks if present
+          if (cleanedText.includes('```json')) {
+            cleanedText = cleanedText.replace(/```json/g, '');
+            cleanedText = cleanedText.replace(/```/g, '');
+          }
+          
+          // Attempt to find valid JSON anywhere in the response
+          let jsonStart = cleanedText.indexOf('{');
+          let jsonEnd = cleanedText.lastIndexOf('}');
+          
+          if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+            // Extract what looks like the JSON part
+            cleanedText = cleanedText.substring(jsonStart, jsonEnd + 1);
+          }
+          
+          console.log("Attempting to parse cleaned JSON:", cleanedText);
+          
+          // Parse the cleaned JSON response
+          const factCheckResult = JSON.parse(cleanedText);
           results.push({
             claim,
             truthValue: factCheckResult.truthValue || 'needs verification',
@@ -297,7 +318,7 @@ async function factCheckClaims(claims) {
           // Continue to next claim
           continue;
         } catch (e) {
-          console.error("Error parsing Perplexity response:", e);
+          console.error("Error parsing Perplexity response:", e, "Raw text:", resultText);
           // Fall through to demo mode for this claim
         }
       } catch (error) {

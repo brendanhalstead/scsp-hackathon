@@ -1,4 +1,4 @@
-# TweetFact Checker Chrome Extension
+# Aletheia Chrome Extension
 
 A Chrome extension that adds fact-checking capabilities to Twitter/X.
 
