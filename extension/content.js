@@ -1,6 +1,6 @@
 /**
- * TweetFact Checker - Content Script
- * Adds fact-checking capability to Twitter/X
+ * Aletheia - Content Script
+ * Adds truth verification capabilities to Twitter/X
  */
 
 // We'll retrieve API keys from secure storage
