@@ -1,14 +1,32 @@
 
 import { AnalysisResult, Claim, Source, SourceCategory } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
-
+import myData from '../../data/analyze_tweets_example_response_big.json';
 /**
  * Generates realistic mock claims based on the search query
  * This allows testing the application without expensive API costs
  */
 export const generateMockClaims = (query: string): Claim[] => {
+  // Process myData to create standardized claims
+  const processedData: Claim[] = myData.map(item => ({
+    id: uuidv4(),
+    source: 'twitter',
+    text: item.tweet || 'no text provided',
+    summary: item.tweet || 'no summary provided',
+    sentiment: 'unknown',
+    relevanceScore: 0.7 + Math.random() * 0.2,
+    timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+    username: 'unknown',
+    platform: 'Twitter',
+    followers: Math.ceil(1000 + Math.random() * 10000),
+    category: 'miscellaneous',
+    language: 'en',
+    verified: false,
+    region: 'ukraine',
+    claims: item.claims
+  }));
   // Base set of claims that will be returned regardless of query
-  const baseTwitterClaims: Claim[] = [
+  var baseTwitterClaims: Claim[] = [
     {
       id: uuidv4(),
       source: 'twitter',
@@ -23,7 +41,8 @@ export const generateMockClaims = (query: string): Claim[] => {
       category: 'government',
       language: 'uk',
       verified: true,
-      region: 'Kharkiv'
+      region: 'Kharkiv',
+      claims: [],
     },
     {
       id: uuidv4(),
@@ -39,7 +58,8 @@ export const generateMockClaims = (query: string): Claim[] => {
       category: 'military_affiliated',
       language: 'uk',
       verified: true,
-      region: 'Multiple'
+      region: 'Multiple',
+      claims: []
     },
     {
       id: uuidv4(),
@@ -55,7 +75,8 @@ export const generateMockClaims = (query: string): Claim[] => {
       category: 'independent_journalist',
       language: 'uk',
       verified: false,
-      region: 'Kharkiv'
+      region: 'Kharkiv',
+      claims: []
     },
     {
       id: uuidv4(),
@@ -71,9 +92,19 @@ export const generateMockClaims = (query: string): Claim[] => {
       category: 'independent_journalist',
       language: 'uk',
       verified: true,
-      region: 'Donetsk'
+      region: 'Donetsk',
+      claims: []
     }
   ];
+  // baseTwitterClaims[0].text = myData[0].tweet; // XXX
+  // baseTwitterClaims[0].summary = myData[0].tweet;
+  // baseTwitterClaims[1].text = myData[0].tweet;
+  // baseTwitterClaims[1].summary = myData[0].tweet;
+  // baseTwitterClaims[2].text = myData[0].tweet;
+  // baseTwitterClaims[2].summary = myData[0].tweet;
+  // baseTwitterClaims[3].text = myData[0].tweet;
+  // baseTwitterClaims[3].summary = myData[0].tweet;
+  // console.log(myData[0]) // XXX
 
   const baseTelegramClaims: Claim[] = [
     {
@@ -89,7 +120,8 @@ export const generateMockClaims = (query: string): Claim[] => {
       followers: 1250000,
       category: 'government',
       language: 'uk',
-      region: 'Dnipropetrovsk'
+      region: 'Dnipropetrovsk',
+      claims: []
     },
     {
       id: uuidv4(),
@@ -104,7 +136,8 @@ export const generateMockClaims = (query: string): Claim[] => {
       followers: 85000,
       category: 'independent_journalist',
       language: 'uk',
-      region: 'Kherson'
+      region: 'Kherson',
+      claims: []
     },
     {
       id: uuidv4(),
@@ -119,7 +152,8 @@ export const generateMockClaims = (query: string): Claim[] => {
       followers: 320000,
       category: 'government',
       language: 'uk',
-      region: 'Donetsk'
+      region: 'Donetsk',
+      claims: []
     },
     {
       id: uuidv4(),
@@ -134,7 +168,8 @@ export const generateMockClaims = (query: string): Claim[] => {
       followers: 430000,
       category: 'military_affiliated',
       language: 'uk',
-      region: 'Belgorod Border'
+      region: 'Belgorod Border',
+      claims: []
     },
     {
       id: uuidv4(),
@@ -149,9 +184,11 @@ export const generateMockClaims = (query: string): Claim[] => {
       followers: 58000,
       category: 'local_source',
       language: 'uk',
-      region: 'Kherson'
+      region: 'Kherson',
+      claims: []
     }
   ];
+  
 
   // If the query is very specific, add a few query-specific claims
   const queryLower = query.toLowerCase();
@@ -173,7 +210,8 @@ export const generateMockClaims = (query: string): Claim[] => {
       category: 'local_source',
       language: 'uk',
       verified: false,
-      region: 'Kharkiv'
+      region: 'Kharkiv',
+      claims: []
     });
   }
 
@@ -193,7 +231,8 @@ export const generateMockClaims = (query: string): Claim[] => {
       category: 'government',
       language: 'uk',
       verified: true,
-      region: 'Multiple'
+      region: 'Multiple',
+      claims: []
     });
   }
 
@@ -213,11 +252,12 @@ export const generateMockClaims = (query: string): Claim[] => {
       category: 'independent_journalist',
       language: 'uk',
       verified: false,
-      region: 'Kyiv'
+      region: 'Kyiv',
+      claims: []
     });
   }
 
-  return [...baseTwitterClaims, ...baseTelegramClaims, ...querySpecificClaims];
+  return [...processedData, ...baseTwitterClaims, ...baseTelegramClaims, ...querySpecificClaims];
 };
 
 /**

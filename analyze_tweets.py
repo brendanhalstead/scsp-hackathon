@@ -200,14 +200,14 @@ def main(prompt_filename: str, output_filename: str):
         logger.info("Logging initialized")
 
     data_dir = Path(os.getenv("DATA_DIR", "data"))
-    tweets_file_path = data_dir / "tweets_v2.json"
+    tweets_file_path = data_dir / "tweets_v1.json"
     # tweets = Tweets.model_validate_json(tweets_file_path.read_text())
     # tweets = Tweets.model_validate_json(tweets_file_path.read_text(encoding="utf-8"))
     with open(tweets_file_path, "r") as f:
         tweets = json.load(f)
         tweets = tweets["tweets"]
         tweets = Tweets(tweets=[Tweet(tweet=t["tweet"] if "tweet" in t else "no tweet found") for t in tweets])
-
+    print("======== LOADED TWEETS ========")
     # Do a demo where we extract entities from a tweet
     # Model configuration
     model_name = os.getenv("MODEL_NAME", "gpt-4-turbo")

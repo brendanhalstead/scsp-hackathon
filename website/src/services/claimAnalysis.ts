@@ -31,68 +31,91 @@ export const analyzeClaimWithPerplexity = async (claim: Claim): Promise<Analysis
   
   // In a real implementation, this would send the claim to Perplexity API
   // For now, simulate a network delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  // Return a mock result
-  return {
-    claims: [
-      {
-        claim: "Ukrainian forces have successfully repelled Russian attacks in the Kharkiv region",
-        confidence: 0.87,
-        supportingEvidence: "Multiple independent sources confirm Ukrainian military presence has stabilized defenses near key frontline positions.",
-        sources: [
-          {
-            url: "https://example.com/news/1",
-            title: "Ukrainian Defense Ministry Statement on Kharkiv Operations",
-            publisher: "Official Ukrainian Government Portal",
-            date: "2023-11-15",
-            reliability: "medium"
-          },
-          {
-            url: "https://example.com/news/2",
-            title: "Independent Analysis of Eastern Front Movements",
-            publisher: "Institute for War Studies",
-            date: "2023-11-16",
-            reliability: "high"
-          }
-        ]
-      },
-      {
-        claim: "Civilian casualties were reported during the engagement",
-        confidence: 0.64,
-        supportingEvidence: "Local hospital reports indicate 3-5 civilian injuries from artillery strikes.",
-        contradictingEvidence: "Russian military claims no civilian structures were targeted.",
-        sources: [
-          {
-            url: "https://example.com/news/3",
-            title: "Red Cross Report on Eastern Ukraine",
-            publisher: "International Red Cross",
-            date: "2023-11-14",
-            reliability: "high"
-          },
-          {
-            url: "https://example.com/news/4",
-            title: "Local Administrator Interview",
-            publisher: "Kharkiv Regional News",
-            date: "2023-11-15",
-            reliability: "medium"
-          },
-          {
-            url: "https://example.com/news/5",
-            title: "Russian Ministry of Defense Statement",
-            publisher: "RIA Novosti",
-            date: "2023-11-15",
-            reliability: "low"
-          }
-        ]
-      }
-    ],
-    summary: "The claim about Ukrainian forces repelling Russian attacks in Kharkiv region appears to be supported by multiple sources, though with some conflicting details about civilian impact. Military officials from both sides have made contradictory statements, but satellite imagery and independent observers confirm Ukrainian defensive positions have held against recent offensive operations.",
-    dataQuality: 0.82
-  };
+  // await new Promise(resolve => setTimeout(resolve, 1500));
+  if (claim.username != "unknown") {
+    console.log('AAAAAAAAA Claim username is KNOWN');
+    // Return a mock result
+    return {
+      claims: [
+        {
+          claim: "Ukrainian forces have successfully repelled Russian attacks in the Kharkiv region",
+          confidence: 0.87,
+          supportingEvidence: "Multiple independent sources confirm Ukrainian military presence has stabilized defenses near key frontline positions.",
+          sources: [
+            {
+              url: "https://example.com/news/1",
+              title: "Ukrainian Defense Ministry Statement on Kharkiv Operations",
+              publisher: "Official Ukrainian Government Portal",
+              date: "2023-11-15",
+              reliability: "medium"
+            },
+            {
+              url: "https://example.com/news/2",
+              title: "Independent Analysis of Eastern Front Movements",
+              publisher: "Institute for War Studies",
+              date: "2023-11-16",
+              reliability: "high"
+            }
+          ]
+        },
+        {
+          claim: "Civilian casualties were reported during the engagement",
+          confidence: 0.64,
+          supportingEvidence: "Local hospital reports indicate 3-5 civilian injuries from artillery strikes.",
+          contradictingEvidence: "Russian military claims no civilian structures were targeted.",
+          sources: [
+            {
+              url: "https://example.com/news/3",
+              title: "Red Cross Report on Eastern Ukraine",
+              publisher: "International Red Cross",
+              date: "2023-11-14",
+              reliability: "high"
+            },
+            {
+              url: "https://example.com/news/4",
+              title: "Local Administrator Interview",
+              publisher: "Kharkiv Regional News",
+              date: "2023-11-15",
+              reliability: "medium"
+            },
+            {
+              url: "https://example.com/news/5",
+              title: "Russian Ministry of Defense Statement",
+              publisher: "RIA Novosti",
+              date: "2023-11-15",
+              reliability: "low"
+            }
+          ]
+        }
+      ],
+      summary: "The claim about Ukrainian forces repelling Russian attacks in Kharkiv region appears to be supported by multiple sources, though with some conflicting details about civilian impact. Military officials from both sides have made contradictory statements, but satellite imagery and independent observers confirm Ukrainian defensive positions have held against recent offensive operations.",
+      dataQuality: 0.82
+    };
+  } else {
+    console.log('BBBBBBBBBBBB Claim username is UNKNOWN');
+    const claimsvar = claim.claims.map(cc => ({
+      claim: cc.claim + " (" + cc.trustworthiness + " according to perplexity sonar pro because " + cc.trustworthiness_explanation + ")",
+      confidence: 0.4 + Math.random() * 0.2,
+      supportingEvidence: "",//(" + cc.trustworthiness + "via perplexity sonar pro) becayuse " + cc.trustworthiness_explanation,
+      contradictingEvidence: "",
+      sources: [],
+      // cc.top3_citations.length > 0 ? cc.top3_citations.map(citation => ({
+      //   url: citation,
+      //   title: "Google Search Result via Perplexity Sonar Pro",
+      //   publisher: "none",
+      //   date: "unknown",
+      //   reliability: "medium" as const
+      // }))
+    }));
+    return {
+      claims: claimsvar,
+      summary: claimsvar.length > 0 ? "No summary (look above)" : "No claims found",
+      dataQuality: 0
+    };
+  }
 };
 
 // Mock implementation of the API endpoint handler
-export const handleClaimAnalysisRequest = async (claim: Claim): Promise<AnalysisResult> => {
+export const analyzeClaimWithPerplexityIdiot = async (claim: Claim): Promise<AnalysisResult> => {
   return analyzeClaimWithPerplexity(claim);
 };

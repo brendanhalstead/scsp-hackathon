@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-
+import { analyzeClaimWithPerplexityIdiot } from '@/services/claimAnalysis';
 interface ClaimAnalysisButtonProps {
   claim: Claim;
 }
@@ -26,20 +26,21 @@ const ClaimAnalysisButton: React.FC<ClaimAnalysisButtonProps> = ({ claim }) => {
   const analyzeClaimWithPerplexity = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/analyze-claim', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(claim),
-      });
+      const response =await analyzeClaimWithPerplexityIdiot(claim); //await fetch('/api/analyze-claim', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(claim),
+      // });
 
-      if (!response.ok) {
-        throw new Error('Failed to analyze claim');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Failed to analyze claim');
+      // }
 
-      const result = await response.json();
-      setAnalysisResult(result);
+      // const result = await response.json();
+      // setAnalysisResult(result);
+      setAnalysisResult(response);
     } catch (error) {
       console.error('Error analyzing claim:', error);
       toast({
